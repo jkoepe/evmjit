@@ -24,11 +24,11 @@
 
 
 // FIXME: Move these checks to evmc tests.
-static_assert(sizeof(evmc_uint256be) == 32, "evmc_uint256be is too big");
-static_assert(sizeof(evmc_address) == 20, "evmc_address is too big");
-static_assert(sizeof(evmc_result) == 64, "evmc_result does not fit cache line");
-static_assert(sizeof(evmc_message) <= 18*8, "evmc_message not optimally packed");
-static_assert(offsetof(evmc_message, code_hash) % 8 == 0, "evmc_message.code_hash not aligned");
+// static_assert(sizeof(evmc_uint256be) == 32, "evmc_uint256be is too big");
+// static_assert(sizeof(evmc_address) == 20, "evmc_address is too big");
+// static_assert(sizeof(evmc_result) == 64, "evmc_result does not fit cache line");
+// static_assert(sizeof(evmc_message) <= 18*8, "evmc_message not optimally packed");
+// static_assert(offsetof(evmc_message, code_hash) % 8 == 0, "evmc_message.code_hash not aligned");
 
 // Check enums match int size.
 // On GCC/clang the underlying type should be unsigned int, on MSVC int
@@ -36,7 +36,7 @@ static_assert(sizeof(evmc_call_kind)  == sizeof(int), "Enum `evmc_call_kind` is 
 static_assert(sizeof(evmc_revision)       == sizeof(int), "Enum `evmc_revision` is not the size of int");
 
 constexpr size_t optionalDataSize = sizeof(evmc_result) - offsetof(evmc_result, create_address);
-static_assert(optionalDataSize == sizeof(evmc_result_optional_data), "");
+// static_assert(optionalDataSize == sizeof(evmc_result_optional_data), "");
 
 
 namespace dev
@@ -495,13 +495,13 @@ static evmc_result execute(evmc_instance* instance, evmc_context* context, evmc_
 	{
 		// Use result's reserved data to store the memory pointer.
 
-		evmc_get_optional_data(&result)->pointer = ctx.m_memData;
+		// evmc_get_optional_data(&result)->pointer = ctx.m_memData;
 
 		// Set pointer to the destructor that will release the memory.
-		result.release = [](evmc_result const* r)
-		{
-			std::free(evmc_get_const_optional_data(r)->pointer);
-		};
+		// result.release = [](evmc_result const* r)
+		// {
+		// 	std::free(evmc_get_const_optional_data(r)->pointer);
+		// };
 		ctx.m_memData = nullptr;
 	}
 
@@ -566,6 +566,7 @@ JITImpl::JITImpl()
         EVMJIT_VERSION,
         evmjit::destroy,
         evmjit::execute,
+        nullptr,
         evmjit::setOption,
     })
 {
