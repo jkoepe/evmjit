@@ -12,6 +12,7 @@
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_os_ostream.h>
 #include <evmc/evmc.h>
+#include <evmc/helpers.h>
 #include "preprocessor/llvm_includes_end.h"
 
 #include "Ext.h"
@@ -493,15 +494,16 @@ static evmc_result execute(evmc_instance* instance, evmc_context* context, evmc_
 	// Take care of the internal memory.
 	if (ctx.m_memData)
 	{
+    //TODO
 		// Use result's reserved data to store the memory pointer.
 
-		// evmc_get_optional_data(&result)->pointer = ctx.m_memData;
+		evmc_get_optional_storage(&result)->pointer = ctx.m_memData;
 
 		// Set pointer to the destructor that will release the memory.
-		// result.release = [](evmc_result const* r)
-		// {
-		// 	std::free(evmc_get_const_optional_data(r)->pointer);
-		// };
+		result.release = [](evmc_result const* r)
+		{
+			std::free(evmc_get_const_optional_storage(r)->pointer);
+		};
 		ctx.m_memData = nullptr;
 	}
 
